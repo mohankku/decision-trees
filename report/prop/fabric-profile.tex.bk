@@ -1,0 +1,137 @@
+\section{R3: Performance Profiling for Fabric System}
+\label{sec:commprofile}
+
+\XXX{2 pages, 20 ~ 25 references}
+
+\vspace{-0.05in}
+\begin{Challenge}
+  % describe chanllenges in profiling fabric systems
+  %  - kernel bypassing, one-side ops
+  %  - no hw performance counter
+  %  - extream low latency
+
+  Distributed systems developed using RDMA interface has the
+  problem of memory hot-spots and latency spikes caused due to
+  memory hot-spots. Profiling these hot spots should be done
+  with coordination between the memory and compute nodes, without
+  any OS performance counters (because RDMA uses kernel bypass) and
+  without any interconnect hardware provided performance counters.
+  This is not trivial, considering thousands of compute and memory
+  nodes. Since the existing RDMA interfaces provides micro second
+  latency~\cite{mellanox:web} (which is further reduced to nano
+  seconds~\cite{stanko:sonuma} with next-generation interconnects),
+  profiling fine grain remote memory access with low overhead is another
+  challenge.
+\end{Challenge}
+
+Disaggregation of resources (memory, cpu etc), either at the rack level or
+at the data center level, is the direction for next generation data centers
+~\cite{sangjin:disaggregation, peter:disaggregation, ana:flash, rackintel:web,
+  facebook:web, oracle:web}. With disaggregation, communication to the compute
+and memory node  is through RDMA like interface provided over the inter
+connects~\cite{genz:web, omnipath:web}. Applications like distributed key-value
+stores~\cite{john:ramcloud, anuj:herd, alek:farm} and databases~\cite{anuj:fasst}
+developed using the RDMA interface. The extreme low latency and high throughput,
+along with minimal CPU intervention for packet processing, improves the
+application performance developed using RDMA interface.
+
+HERD~\cite{anuj:herd}, RamCloud~\cite{john:ramcloud} and FARM~\cite{alek:farm} are
+examples of distributed key-value stores developed using RDMA. A large popularity
+skew among data items result in severe load imbalance~\cite{stanko:rackout}, as a
+small subset of the memory nodes will saturate their NICs, thereby violating the
+tail latency SLO. FARM, for example, shows the impact of hot-spots where some memory
+nodes are overloaded and in turn hot-spot NICs handle high requests per second.
+Hot-spots increases the GET/PUT request latency.
+
+Distributed systems like Amazon Dynamo~\cite{amazon:dynamo}, operate with an SLA
+of 300ms for 99.9\% of their requests to provide better user experience. The
+business impact of tail latency is very high~\cite{latency:web}.
+According to Amazon, every 100ms of latency cost them 1\%
+in sales. For Google, an extra .5 seconds in search page generation time dropped
+traffic by 20\%. A broker could lose 4 million dollars in revenues per millisecond
+if their electronic trading platform is 5 milliseconds behind the competition.
+Fabric profiler's main goal is to identify the memory hot-spots and quantify the
+latency spike in accessing these hot-spots, for next generation disaggregated
+data centers. Fabric profiler, as the first step, provides the application
+programmer to reason about the latency increase due to hot-spots.
+
+Fabric profiler, as shown in~\autoref{f:fabric-overview}, needs distributed
+profiling across compute and memory nodes. The programmer provides the memory
+node id or the data entries to profile for hot-spots. For simplicity, we assume
+memory node id as programmer input. On the memory nodes, profiler collects memory
+access frequency to different memory locations from different compute nodes. Based
+on memory node profiling, the compute node profiles the latency of RDMA operations
+to specific memory locations. Both the above steps need hardware assisted profiling,
+we choose to leverage the FPGAs available in current NIC cards for this profiling.
+Verbs software profiler, in the compute node, profiles the software overhead along
+with RDMA operations latency and accounts the overall latency. Finally, the software
+profiler information across multiple compute nodes is aggregated at the rack/data
+center level.
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.75\textwidth]{fig/prof-fabric}
+  \caption{Fabric profiler overview}
+  \label{f:fabric-overview}
+\end{figure}
+
+% explain why fabric profiling is necessary and difficult
+%  - access skew is common (e.g., RDMA key value store, ref RackOut,
+%  FaRM, etc.)
+%  - rmda perf charistics: asymm.
+
+% introduce high level idea of our approach
+% - distributed profiling to identify hot spot and latency spike
+% - h/w s/w co-design
+
+% <Fig 6. overview of fabric profiling>
+%  - compute node: latency pike
+%  - memory node:  NPMC on NIC FPGA
+%  - rack-level aggregation
+
+\subsection{R3.1 Monitoring Memory Hot Spot}
+\label{sub:hotspot}
+
+Memory accesses in the memory node are monitored to identity memory hot spots. For
+the memory nodes, RDMA NIC acts like a memory controller for RDMA operations from
+the compute nodes. We need information from the NIC about memory access to different
+memory locations, which is not available. Current Mellanox 100G NICs have inbuilt
+FPGAs attached to them. The FPGAs are attached behind the NIC interface, which can
+monitor the NIC RDMA memory accesses from different compute nodes. With this, we
+can maintain the memory access frequency from different compute nodes and provide
+this input to the respective compute nodes. 
+
+% our approach
+% - no supported h/w performance counter at NIC
+% - we think that future nic should provide hw performance counter
+% - we will exmain NPMC using FPGA on NIC
+%   -> FPGA -> NIC -> FPGA
+
+\subsection{R3.2 Monitoring Latency Spike}
+\label{sub:latency}
+
+Monitoring latency spike involves an hardware-software integrated profiling on the
+compute node. Based on the memory address information received from the memory node,
+the compute node NIC can provide the RDMA operation latency to the particular memory
+addresses. Since the NIC doesn't provide the latency to particular memory addresses,
+we leverage the NIC FPGA to compute the latency to specific memory location. This is
+the hardware part of the solution.
+
+For the latency incurred at the software layer, we need profile information at the
+verbs interface which accounts for the overall latency. Adding on to the latency
+information from the FPGAs, the software profiler can include the latency incurred
+due to delay in the application polling for completion events.  
+
+% our approach
+% - profile RDMA verb interface
+%   - justify why RDMA verb: mem, nvme over fabric, gpgpu
+% - challenge:
+%   - should be extremely low overhead
+
+
+\subsection{R3.3 Aggregation of Profiled Data}
+\label{sub:agg}
+
+% our approach
+% - aggregation
+% - challenge: how to associate code to the hot memory address

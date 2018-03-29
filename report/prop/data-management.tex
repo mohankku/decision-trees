@@ -1,0 +1,83 @@
+\section*{\centerline{Data Management Plan}}
+\vskip-0.15in\rule{6.5in}{0.0005in}
+
+\noindent
+Following the NSF Data Management Guidelines,
+we will administer, archive, and maintain
+the data and the intellectual properties generated during this project.
+%
+The data acquired, processed, and preserved in the
+context of this proposal will be further governed by policies of
+Georgia Institute of Technology pertaining to intellectual property,
+record retention, and data management.
+%
+In this document,
+we describe the expected data that we will generate and collect,
+as well as a detailed plan to openly manage them
+without violating the privacy of users.
+
+\vspace{10px}
+\subsection*{1.~~Expected Data}
+
+\squishlist
+\item Source code of our scalability profilers:
+  idle profiler, causal profiler, and fabric profiler;
+\item Details of experiment settings and analysis results in support of reproducible science;
+\item Package distribution and releases of our scalability profilers;
+\item Publications: academic papers, technical manuals and blog postings;
+\item Curriculum materials: tutorials and lab materials for operating
+  system and distributed systems courses.
+\squishend
+
+\noindent
+As our goal is to generate a tangible influence on our society;
+all the developed techniques and implementation,
+even generated via collaboration with other domain experts,
+will be kept publicly accessible,
+and ultimately tech-transferred to the Linux Foundation and the Apache
+Foundation for future maintenance.
+
+\vspace{10px}
+\subsection*{2.~~Data Storage and Archiving Policies}
+
+The Georgia Tech Information Security Center (GTISC), where the PIs are
+mainly involved in, has an operation team
+with multiple permanent system administrators
+who are specialized in maintaining our group's infrastructure.
+%
+The central repository (e.g., gitolite, code review system,
+monitoring, and backup services) is protected by RAID5
+in local storage, as well as backed up daily to
+a dedicated archiving server.
+%
+Our internal services and machines are regularly audited
+by security experts
+and updated to meet the standard security policy of GTISC.
+
+\vspace{10px}
+\subsection*{3.~~Open Source Initiative and Data Dissemination}
+
+Our developed techniques, and implementations, as part of this
+proposal, will be continuously released and kept publicly available
+to reach out to broader communities.
+
+\PP{Source code.}
+The prototype that is built on top of open source project (e.g., GPL)
+will be correspondingly licensed using the same policy. If the
+software is entirely developed from scratch without using any other
+proprietary software, the PIs will make it open source with detailed
+documentation using one of the open source license policies. In
+particular, we plan to make an early release of our research prototype
+via our group's GitHub repository.
+
+\begin{verbatim}
+    $ git clone https://github.com/sslab-gatech/
+\end{verbatim}
+
+\PP{Experiment results.}
+We will maintain a set of experiment scripts that will let anyone
+reuse our intermediate results or completely reproduce them from
+scratch.
+%
+All data, technical reports, peer-reviewed publication, and package
+distributions will be provided on the project and group web sites.

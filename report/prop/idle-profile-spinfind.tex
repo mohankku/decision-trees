@@ -1,0 +1,92 @@
+\subsection{R1.1 Finding Non-blocking Synchronization Primitives}
+\label{sub:spinfinder}
+
+Identifying non-blocking synchronization primitives (e.g., spinlock,
+spinning barrier) in a program is an essential step to profile wasted
+CPU cycles for contending critical sections. At first glance, it looks
+very simple---just find \cc{pthread_spin_lock()} and
+\cc{pthread_barrier_wait()}.
+%
+But this is not the case in practice. Many performance-critical software
+(e.g., MySQL~\cite{mysql:web}, RocksDB~\cite{rocksdb:web}, and the Linux kernel) 
+and libraries (e.g., Intel TBB~\cite{tbb:web}, Boost C++
+libraries~\cite{boost:web}, and Concurrency Kit~\cite{ck:web}) 
+use their own non-blocking synchronization primitives
+customized and optimized for their needs.
+One common yet essential optimization
+is inlining synchronization routines
+either by declaring them as inline functions or macros. 
+For example, MySQL uses three custom synchronization primitives (e.g.,
+\cc{rw_lock_s_lock_spin()}), all of which
+are inlined so they are distributed in more than a thousand places
+in the compiled binary.
+%
+As a result, such an optimization as a result produces imprecise,
+often complicated profiling results
+(e.g., synchronization routines are mingled with their callers).
+%
+Potential solutions might be manual or dynamic instrumentation of
+non-blocking synchronization primitives so that the profiler can monitor
+each operation on the primitives. But such instrumentation-based
+approaches impose high runtime overhead, which sometimes leads to
+the dissappearance of the scalability bottlenecks (i.e., Heisenbug), or
+seriously limits their applicability (e.g., dynamic instrumentation of
+the operating system's kernel is challenging).
+
+\boxbeg
+\begin{Challenge}
+  Non-blocking synchronization primitives are often inlined with their
+  caller functions to avoid function call overhead. In that case,
+  there is no function call of non-blocking synchronization
+  primitives. What is the best way to discover non-blocking
+  synchronization primitives in a program that is practical and
+  provides reasonable performance without limiting the idle profiler's
+  applicability?
+\end{Challenge}
+\boxend
+
+We propose to find spinning loops in non-blocking synchronization
+primitives by analyzing the program binary.
+First, we assume that these binaries are running on shared memory
+processor (SMP) architectures that are the most widely deployed ones.
+Thus, for the non-blocking synchronization primitives, our approach
+relies on the following property:
+
+\vspace{1px}
+\begin{itemize}
+\item[]
+\textbf{Spin Loop Property:}
+{\em
+  Non-blocking synchronization primitives have one or more spin loops,
+  whose exit conditions (i.e., synchronization variables)
+  are triggered by the external entity (i.e., other tasks) are outside of
+  the loop.}
+\end{itemize}
+\vspace{1px}
+
+Both the spinlock and spinning barrier follow the \textit{spin loop property}.
+In the case of spinlock, lock waiters spin inside the loop until a lock holder
+changes its {\em lock variable} to release the spinlock;
+while in the spinning barrier, the last task hitting a barrier resets its {\em
+barrier flag} to make previously arrived, waiting tasks proceed.
+
+To be practical, the idle profiler should
+perform system-wide profiling for both the kernel and the user
+applications without modifying source code.
+To meet this goal, we will analyze binary files to find such a spin loop and
+its synchronization variable.
+Specifically, we reconstruct a control
+flow graph (CFG) from a disassembled binary file, and then find natural loops
+in the CFG.
+Among the identified loops, we select such loops that follow the spin loop
+property, as spin loops, which are part of non-blocking
+synchronization primitives. Also, for identified spin loops, we find
+the definitions of synchronization variables for dynamic profiling
+(\autoref{sub:dks}).
+%
+However, the binary analysis imposes research and engineering
+challenges. For example, the analysis time should be reasonably small,
+which is typically not the case with existing
+approaches. Moreover, the obtained results should be precise so
+the profiled results are correct. Even if that is not the case, the
+dynamic profiling should be robust enough to filter out those cases.

@@ -1,0 +1,46 @@
+\begin{tabular}{lcccccc}
+\toprule
+\multirow{2}{*}{Profile tool} &
+ \multicolumn{2}{c}{Profiling boundary} &
+ \multicolumn{2}{c}{Profiling blocking sync.} &
+ \multicolumn{2}{c}{Profiling non-blocking sync.} \\
+ \cmidrule(l){2-3}
+ \cmidrule(l){4-5}
+ \cmidrule(l){6-7}
+&
+ User    & Kernel &
+ Waiting task & Holding task &
+ Waiting task & Holding task \\
+\midrule
+{Linux \perf} &
+ \V & \V &
+ -  & -  &
+ -  & -  \\
+{LatencyTOP}  &
+ - & \V &
+ \V & -  &
+ -  & -  \\
+{bcc off-CPU} &
+ \V & \V &
+ \V & -  &
+ -  & -  \\
+{Kernel Lock-stat} &
+ - & \V &
+ \V & -  &
+ \V & -  \\
+{Intel VTune Lock-Wait} &
+ \V & - &
+ \V & - &
+ \V & -  \\
+{HPCToolkit*}  &
+ \V & - &
+ \V & \V &
+ \V & \V \\
+\midrule
+\textbf{Idle profiler}  &
+ \V & \V &
+ \V & \V &
+ \V & \V \\
+\bottomrule
+\end{tabular}
+

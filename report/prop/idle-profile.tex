@@ -1,0 +1,109 @@
+\section{R1: Idle Profiling for Scale-up Architectures}
+\label{sec:idleprofile}
+
+\begin{figure}[t]
+\centering
+\input{data/exim}
+\caption{
+  \exim throughput (i.e., delivering messages)
+  with four file systems.
+  To avoid I/O devices being scalability bottlenecks, we ran test
+  clients on the same machine using \mem.
+  We found that the manycore scalability of \exim
+  depends a lot on the file systems
+  (e.g., \ext is 54\x faster than \btrfs at 80-core).
+  In particular, \btrfs spends 47\% of CPU time on synchronization;
+  \ffs has been blocked (i.e., idle) for 95\% of its running time.
+}
+\label{f:exim}
+\vspace{-5px}
+\end{figure}
+
+With the proliferation of fast IO devices as well as the increasing
+core count in these systems, it is becoming difficult for developers
+to identify scalability bottlenecks, as they are unexpected,
+or worse yet, counter-intuitive in many cases.
+%
+For example, \autoref{f:exim} shows the scalability of the \exim mail
+server with a varying number of cores on four widely deployed
+file systems in our previous work~\cite{min:fxmark}.
+%
+Even though \exim is an embarrassingly parallel workload by design,
+which does not have any bottleneck in delivering messages itself,
+its scalability behavior is mainly dominated
+by the characteristics of the underlying file systems.
+
+One might consider using existing profiling tools~\cite{perflinux:web,
+  lockstat:web, latencytop:web, bcc:web, vtune:web,
+  hpctoolkit:ppopp10, hpctoolkit:web}
+to understand the scalability problem in detail,
+but unfortunately,
+they cannot, by design,
+produce an informative report
+to explain the scalability bottlenecks in detail.
+%
+\autoref{t:prof-tools} summarizes the problem of existing profiling tools.
+They are
+limited in finding hotspots burning CPU cycles (\perf~\cite{perflinux:web}),
+or provide insufficient information at both the kernel and userspace levels
+(kernel lock-stat~\cite{lockstat:web}, LatencyTOP~\cite{latencytop:web},
+off-CPU analysis in BCC toolkit~\cite{bcc:web},
+Intel VTune~\cite{vtune:web},
+HPCToolkit~\cite{hpctoolkit:ppopp10, hpctoolkit:web}).
+%
+For example, in \autoref{f:exim},
+existing tools report either that CPUs are mostly idle during the benchmark
+(e.g., sleeping routine in \ffs)
+due to {\em blocking synchronization} such as mutex,
+or that CPUs are utilized
+(e.g., a spin loop in \btrfs)
+due to {\em non-blocking synchronization} such as spinlock.
+%
+These two observed behaviors are barely useful for
+developers to understand
+why the profiled program does not scale well.
+%
+In addition, system-wide profiling, including user applications and
+the OS kernel, is essential to discover such unexpected bottlenecks, but most
+existing tools are designed to profile one or the other.
+
+
+\begin{table}[tb]
+\centering
+\scriptsize
+\input{fig/tbl-profile-tools}
+  \vspace{0.5em}
+  NOTE: HPCToolkit only supports profiling the \cc{pthread} library.
+\caption{
+  Comparison of existing profiling tools and our idle profiler.
+  None of the existing tools provides sufficient information to correctly
+  find scalability bottlenecks. Though HPCToolkit provides the richest
+  information among the existing tools, its design is specific to
+  \cc{pthread} libraries (i.e., spinlock and mutex) and incurs high
+  runtime overhead due to its instrumentation. Unlike the existing
+  profiling tools, our profiler is designed to provide
+  system-wide information, which is sufficient for
+  developers to easily understand scalability bottlenecks.
+}
+\label{t:prof-tools}
+\vspace{-5px}
+\end{table}
+
+We will develop an {\em idle profiler} that will profile a system's idle
+state to discover scalability bottlenecks in scale-up
+architectures. Our goal is to perform system-wide profiling including kernel
+and user applications with low performance overhead as well as no
+source code modification.
+This will allow us to find subtle performance bottlenecks. To this end,
+as illustrated in~\autoref{f:idleprofiler-overview},
+the idle profiler first finds spin loops by analyzing the binary
+(\autoref{sub:spinfinder}) and then dynamically monitors various critical
+sections that may contribute to the performance (\autoref{sub:dks}),
+and finally suggests optimization candidates by analyzing the profiled results
+offline (\autoref{sub:idlegraph}).
+In this section, we describe our preliminary design decisions
+along with the technical challenges.
+
+\input{idle-profile-spinfind}
+\input{idle-profile-dks}
+\input{idle-profile-graph}

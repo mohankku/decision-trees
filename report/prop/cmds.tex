@@ -1,0 +1,168 @@
+\renewcommand{\ttdefault}{pxtt}
+
+\usepackage{amsthm}
+\newcommand{\URL}{\url}
+\newcommand{\cc}[1]{\mbox{\smaller[0.5]\texttt{#1}}}
+
+%\clubpenalty=10000
+%\widowpenalty=10000
+
+%\linespread{1.2}
+
+\fvset{fontsize=\scriptsize,xleftmargin=8pt,numbers=left,numbersep=5pt}
+
+\input{code/fmt}
+\newcommand{\figrule}{\hrule width \hsize height .33pt}
+\newcommand{\coderule}{\vspace{-0.4em}\figrule}
+
+\setlength{\abovedisplayskip}{0pt}
+\setlength{\abovedisplayshortskip}{0pt}
+\setlength{\belowdisplayskip}{0pt}
+\setlength{\belowdisplayshortskip}{0pt}
+\setlength{\jot}{0pt}
+
+\def\Snospace~{\S{}}
+\renewcommand*\sectionautorefname{\Snospace}
+\def\sectionautorefname{\Snospace}
+\def\subsectionautorefname{\Snospace}
+\def\subsubsectionautorefname{\Snospace}
+\def\chapterautorefname{\Snospace}
+%\renewcommand{\figurename}{Fig.}
+%\def\figureautorefname{\figurename}
+\newcommand{\subfigureautorefname}{\figureautorefname}
+
+%\numberwithin{equation}{section}
+\newcommand{\yes}{Y}
+\newcommand{\no}{}
+
+% sema
+\newcommand{\shl}{\ \cc{<}\cc{<}\ }
+\newcommand{\shr}{\ \cc{>}\cc{>}\ }
+
+\if 0
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.9}
+\renewcommand{\dblfloatpagefraction}{0.9}
+\setcounter{topnumber}{10}
+\setcounter{bottomnumber}{10}
+\setcounter{totalnumber}{10}
+\setcounter{dbltopnumber}{10}
+\fi
+
+\newif\ifdraft\drafttrue
+\newif\ifnotes\notestrue
+\ifdraft\else\notesfalse\fi
+
+% ref. http://en.wikibooks.org/wiki/LaTeX/Colors
+\newcommand{\TK}[1]{\textcolor{LimeGreen}{TK: #1}}
+\newcommand{\SK}[1]{\textcolor{blue}{SK: #1}}
+\newcommand{\MK}[1]{\textcolor{red}{MK: #1}}
+\newcommand{\SM}[1]{\textcolor{CornflowerBlue}{SM: #1}}
+\newcommand{\WK}[1]{\textcolor{BurntOrange}{WK: #1}}
+\newcommand{\CM}[1]{\textcolor{Violet}{CM: #1}}
+\newcommand{\XXX}[1]{\textcolor{red}{XXX: #1}}
+\newcommand{\X}[0]{\textcolor{red}{XXX}}
+\newcommand{\TODO}[1]{\textcolor{Melon}{TODO: #1}}
+
+\newtheorem{Challenge}{\textbf{Research Challenge}}
+% hide comments
+% \renewcommand{\TK}[1]{\ignorespaces}
+% \renewcommand{\XXX}[1]{\ignorespaces}
+% \renewcommand{\TODO}[1]{\ignorespaces}
+
+%% Ensure ligatures (e.g., ``fine official flag'') can be copy/pasted from PDF.
+\input{glyphtounicode}
+\pdfgentounicode=1
+
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+% include macros
+\newcommand{\includepdf}[1]{
+  \includegraphics[width=\columnwidth]{#1}
+}
+\newcommand{\includeplot}[1]{
+  \resizebox{\columnwidth}{!}{\input{#1}}
+}
+
+% list
+\newcommand{\squishlist}{
+\begin{itemize}[noitemsep,nolistsep]
+  \setlength{\itemsep}{-0pt}
+}
+\newcommand{\squishend}{
+  \end{itemize}
+}
+
+%%
+%% NOTE.
+%%  to use circled number in caption, use
+%%   (e.g., \protect\C{1})
+%%
+\usepackage{tikz}
+\newcommand*\C[1]{%
+\begin{tikzpicture}[baseline=(C.base)]
+\node[draw,circle,inner sep=0.2pt](C) {#1};
+\end{tikzpicture}}
+
+\newcommand*\BC[1]{%
+\begin{tikzpicture}[baseline=(C.base)]
+\node[draw,circle,fill=black,inner sep=0.2pt](C) {\textcolor{white}{#1}};
+\end{tikzpicture}}
+
+\newcommand{\PP}[1]{
+%\vspace{2px}
+\noindent{\bf #1}
+}
+
+\setlength{\parskip}{2px}
+\setlist{itemsep=1pt,parsep=1pt,topsep=1pt,partopsep=1pt}
+\newcommand{\V}{\checkmark}
+\newcommand{\x}{$\times$\xspace}
+
+%% new commands
+% tools
+\newcommand{\perf}{\mbox{\cc{perf}}\xspace}
+\newcommand{\kprobe}{\mbox{\cc{kprobe}}\xspace}
+
+% media
+\newcommand{\mem}{\mbox{\cc{RAMDISK}}\xspace}
+\newcommand{\ssd}{\mbox{\cc{SSD}}\xspace}
+\newcommand{\hdd}{\mbox{\cc{HDD}}\xspace}
+
+% workloads
+\newcommand{\exim}{\mbox{Exim}\xspace}
+\newcommand{\rocksdb}{\mbox{RocksDB}\xspace}
+\newcommand{\leveldb}{\mbox{LevelDB}\xspace}
+\newcommand{\mongodb}{\mbox{MongoDB}\xspace}
+\newcommand{\filebench}{\mbox{Filebench}\xspace}
+\newcommand{\dbench}{\mbox{\smaller[.8]DBENCH}\xspace}
+\newcommand{\dbbench}{\texttt{db\_bench}\xspace}
+
+% file system
+\newcommand{\btrfs}{\mbox{\cc{btrfs}}\xspace}
+\newcommand{\ext}{\mbox{\cc{ext4}}\xspace}
+\newcommand{\extn}{\mbox{\cc{ext4$_{\text{NJ}}$}}\xspace}
+\newcommand{\ffs}{\mbox{\cc{F2FS}}\xspace}
+\newcommand{\tmpfs}{\mbox{\cc{tmpfs}}\xspace}
+\newcommand{\xfs}{\mbox{\cc{XFS}}\xspace}
+
+\newcommand{\jbd}{\mbox{\cc{JBD2}}\xspace}
+\newcommand{\vfs}{\mbox{\cc{VFS}}\xspace}
+
+\newcommand{\boxbeg}{
+\noindent
+\begin{tabular}{|l|}\hline
+\begin{minipage}{6.3in}
+\vspace{0px}
+\noindent \it
+}
+
+\newcommand{\boxend}{
+\vspace{0px}
+\end{minipage}\\ \hline
+\end{tabular}
+\vspace{3px}
+}

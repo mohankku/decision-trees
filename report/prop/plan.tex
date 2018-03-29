@@ -1,0 +1,94 @@
+\section{Schedule and Milestones}
+\label{s:plan}
+
+\if 0
+\begin{table}[t!]
+\centering
+\resizebox{1.0\columnwidth}{!}{
+ \input{fig/tbl-plan}
+}
+\quad\checkmark: important milestone,
+\quad\colorbox{gray}{\phantom{XX}} : confirmative plan, 
+\quad\colorbox{lightgray}{\phantom{XX}} : tentative plan
+\caption{Schedule and milestones to design, implement, and evaluate
+  \sys, with the goal of releasing \sys as open source and providing
+  it as popular distribution packages.}
+\label{t:plan}
+\end{table}
+\fi
+
+In this section, we lay out important
+milestones and corresponding schedules for each year.
+
+\textbf{In year 1}, we will build an initial prototype framework
+that integrates basic application C/R and in-place kernel switch.
+%
+This prototype will serve as the foundation
+for exploring research ideas in subsequent years.
+%
+In parallel, we will explore the performance
+optimizations envisioned for application C/R\@.
+
+\textbf{In year 2}, we will extend the prototype framework
+to two update validation schemes:
+dry-run update and replication-based verification.
+%
+We will also implement a set of benchmarks to evaluate the
+performance, usability, and robustness of \sys's approach
+to system updates.
+%
+Concurrently, we will introduce \sys's approach to
+security labs and training materials for the Gatech CTF team.
+
+\textbf{In year 3}, we will explore design choices
+as native infrastructure of a commodity OS,
+Linux, to efficiently support \sys,
+based on the experiences from previous years.
+%
+In parallel, we will make the prototype of \sys publicly available and
+contribute to \criu and \cc{Linux} communities.
+%
+At this milestone, we will have a clearer idea of which design choices
+are more suitable to which environments or under which constraints.
+
+\textbf{In year 4}, we will explore \sys's approach 
+in the context of Avionic software 
+that has hard real-time constraints and
+strict safety requirements.
+%
+In particular,
+we will devise a safe fallback and update validation mechanisms
+specialized for avionic software including drone systems,
+and analyze their potential limitations
+(e.g., types of failures to be handled)
+by closely partnering with Boeing.
+
+\textbf{In year 5}, we will extend \sys's approach further to
+two other domains:
+Energy Delivery System with GTRI
+and Cloud infrastructure with Parallels.
+%
+The primary goal of both domains is to completely
+remove the downtime during system updates
+by co-designing the full software stack,
+unlike typical computing workstation environments.
+
+This project will involve one PI and two PhD students
+including one funded by the PI's startup,
+and will closely collaborate with
+Boeing, GTRI, Parallels and the CRIU open source team.
+%
+If successful, the developed techniques, experiences,
+and open source tools
+will not only make a direct impact to computer users,
+but also open new opportunities in other domains
+where system updates are critical to their security and operation.
+
+%
+% Note that our ultimate goal is
+% to make a great impact, not only helping end-users and system admins
+% update operating systems quickly and safely, but also
+% and fostering research communities with inspiring
+% technical contributions; our team will spend non-negligible amount of
+% time to maintain our project as opensource, matured and maintained
+% with \criu communities.
