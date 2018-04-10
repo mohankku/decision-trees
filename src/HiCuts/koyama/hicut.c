@@ -10,18 +10,25 @@ FILE *fpt;           // test trace file
 
 int loadrule(FILE *fp, pc_rule *rule){
   
-  int tmp;
+  int tmp, len;
   unsigned sip1, sip2, sip3, sip4, siplen;
   unsigned dip1, dip2, dip3, dip4, diplen;
-  unsigned proto, protomask;
+  unsigned proto, protomask, temp1, temp2;
   int i = 0;
   
   while(1){
-    
-    if(fscanf(fp,"@%d.%d.%d.%d/%d\t%d.%d.%d.%d/%d\t%d : %d\t%d : %d\t%x/%x\n", 
-        &sip1, &sip2, &sip3, &sip4, &siplen, &dip1, &dip2, &dip3, &dip4, &diplen, 
-        &rule[i].field[2].low, &rule[i].field[2].high, &rule[i].field[3].low, &rule[i].field[3].high,
-        &proto, &protomask) != 16) break;
+    len = fscanf(fp,"@%d.%d.%d.%d/%d\t%d.%d.%d.%d/%d\t%d : %d\t%d : %d\t%x/%x\t%x/%x\n",
+                &sip1, &sip2, &sip3, &sip4, &siplen, &dip1, &dip2, &dip3,
+                &dip4, &diplen, &rule[i].field[2].low, &rule[i].field[2].high,
+                &rule[i].field[3].low, &rule[i].field[3].high, &proto,
+                &protomask, &temp1, &temp2);
+
+    /* printf("The length of scanned value = %d\n", len); */
+    /* printf("%d : %d", rule[i].field[3].low, rule[i].field[3].high); */
+    /* printf("%x : %x", temp1, temp2); */
+    /* getchar(); */
+    if (len != 18) break;
+
     if(siplen == 0){
       rule[i].field[0].low = 0;
       rule[i].field[0].high = 0xFFFFFFFF;
