@@ -4,7 +4,7 @@
 
 int binth = 16;      // leaf threashold
 float spfac = 2;     // space explosion factor
-int opt = 3;         // dimension selection
+int opt = 0;         // dimension selection
 FILE *fpr;           // ruleset file
 FILE *fpt;           // test trace file
 
