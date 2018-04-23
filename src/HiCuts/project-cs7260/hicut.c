@@ -154,7 +154,7 @@ int main(int argc, char* argv[]){
   int numrules=0;  // actual number of rules in rule set
   struct pc_rule *rule; 
   int i,j;
-  int header[MAXDIMENSIONS];
+  long long header[6];
   int matchid, fid;
   char *s = (char *)calloc(200, sizeof(char));
   
@@ -189,8 +189,8 @@ int main(int argc, char* argv[]){
   
   if(fpt != NULL){
     i=0; j=0;
-    while(fscanf(fpt,"%u %u %d %d %d %d\n", 
-          &header[0], &header[1], &header[2], &header[3], &header[4], &fid) != Null){
+    while(fscanf(fpt,"%lld %lld %lld %lld %lld %lld %d\n",
+                      &header[0], &header[1], &header[2], &header[3], &header[4], &header[5], &fid) != Null){
       i++;
       
       if((matchid = T.trieLookup(header)) == -1){

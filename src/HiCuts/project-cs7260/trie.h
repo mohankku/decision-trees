@@ -31,7 +31,7 @@ public:		//trie(int=10000, int=100, int=16, int=1000, struct pc_rule*, int=1);
             trie(int, int, int, float, struct pc_rule*, int);
 		~trie();
 
-	int     trieLookup(int*);
+	int     trieLookup(long long*);
 	int	  trieSize();
 	int     trieDepth();
 	int     trieRedun();

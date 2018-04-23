@@ -368,7 +368,7 @@ void trie::createtrie(){
   printf("worst case %f bytes/lookup\n", worstcase*4); 
 }
 
-int trie::trieLookup(int* header){
+int trie::trieLookup(long long* header){
   
   int index[MAXDIMENSIONS];
   int cdim, cchild, cover, cuts;
