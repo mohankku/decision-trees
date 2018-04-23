@@ -67,6 +67,7 @@ void trie::choose_np_dim(nodeItem *v, int *d, int *np){
   dheap H1(MAXRULES,2);
   dheap H2(MAXRULES,2);
   int *nr[MAXDIMENSIONS];              //number of rules in each child
+  int enter_loop=0;
 
   for(k=0; k<MAXDIMENSIONS; k++) nr[k]=NULL;
 
@@ -177,9 +178,11 @@ void trie::choose_np_dim(nodeItem *v, int *d, int *np){
       }
       
       while(H1.findmin()!= Null){
-        temp = H1.findmin();
+          temp = H1.findmin();
     	  tmpkey = H1.key(temp);
+          enter_loop = 0;
     	  while(tmpkey == H1.key(H1.findmin())){
+            enter_loop=1;
     	    j = H1.deletemin();
     	    if(rule[j].field[k].high > v->field[k].high){
     	      H2.insert(j, v->field[k].high);	
@@ -187,6 +190,9 @@ void trie::choose_np_dim(nodeItem *v, int *d, int *np){
     	      H2.insert(j, rule[j].field[k].high);
     	    }
     	  }
+          /* Some bug, just delete the key */
+          if (!enter_loop)
+            j = H1.deletemin();
     	  while(H2.findmin() != Null){
     	    ncomponent[k]++;
     	    j = H2.findmin();
@@ -314,7 +320,7 @@ void trie::createtrie(){
           n++;
           nodeSet[v].child[i] = freelist; 
           u = freelist;
-          freelist = nodeSet[freelist].child[0];	
+          // freelist = nodeSet[freelist].child[0];
           nodeSet[u].nrules = nr;
           //printf("creat node %d (%d child of %d) with %d rules\n", u, i, v, nr);
           if(nr <= binth){
