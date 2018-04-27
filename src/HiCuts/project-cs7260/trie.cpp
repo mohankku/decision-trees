@@ -3,7 +3,6 @@
 #include "trie.h"
 #include <queue>
 #include "dheap.h"
-#include "list.h"
 
 
 trie::trie(int N1, int numrules1, int binth1, float spfac1, struct pc_rule* rule1, int opt1) {
@@ -457,6 +456,6 @@ int trie::trieLookup(long long* header){
 
 
 int trie::trieSize() {
-	printf("TrieSize called!\n");
+	//printf("TrieSize called!\n");
 	return nodeSet.size();
 }
