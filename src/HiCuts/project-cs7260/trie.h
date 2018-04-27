@@ -1,13 +1,18 @@
+#ifndef __TRIE_EH
+#define __TRIE_EH
+
 class trie {
-	struct nodeItem {
+
+	typedef struct _nodeItem {
 		bool isleaf;            //is a leaf node if true
   		int nrules;             //number of rules in this node  
             int *ruleid;             //rule ids in this node
   		struct range field[MAXDIMENSIONS];      
   		unsigned int dim : 3;  	//0:sip; 1:dip; 2:proto; 3:sp; 4:dp
   		unsigned int ncuts; //number of cuts
-            int *child;             //child pointers
-	};
+        struct _nodeItem ** child;             //child pointers
+	} nodeItem;
+
 	int	N;			// max number of nodes in trie
 	int	n;			// current number of nodes in trie
 	int   pass;             // max trie depth
@@ -39,9 +44,9 @@ public:		//trie(int=10000, int=100, int=16, int=1000, struct pc_rule*, int=1);
 	float   trieMemAccess();
 };
 
-inline int trie::trieSize() {return n;}
 inline int trie::trieDepth() {return pass;}
 inline int trie::trieRedun() {return n2;}
 inline int trie::trieRule() {return n3;}
 inline float trie::trieMemAccess() {return n4;}
 
+#endif

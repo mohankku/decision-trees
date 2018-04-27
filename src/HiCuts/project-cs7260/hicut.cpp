@@ -32,6 +32,16 @@ int loadrule(FILE *fp, pc_rule *rule){
     if(siplen == 0){
       rule[i].field[0].low = 0;
       rule[i].field[0].high = 0xFFFFFFFF;
+	/* I think this should be:
+	} else {
+		tmp = sip1<<24;
+		tmp += sip2<<16;
+		tmp += sip3<<8;
+		tmp += sip4;
+		tmp &= (0xFFFFFFFF << (32 - siplen));
+		rule[i].field[0].low = tmp;
+		rule[i].field[0].high = rule[i].field[0].low + (1 << (32 - siplen)) - 1;
+		}*/
     }else if(siplen > 0 && siplen <= 8){
       tmp = sip1<<24;
       rule[i].field[0].low = tmp;

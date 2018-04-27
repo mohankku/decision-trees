@@ -14,14 +14,14 @@ trie::trie(int N1, int numrules1, int binth1, float spfac1, struct pc_rule* rule
   spfac = spfac1;
   rule = rule1;
   opt = opt1;
-  nodeSet = new nodeItem[N+1];
+  nodeSet = new nodeItem[N+1]();
   root = 1; 
   n = 1;
   n2 = 0;
   n3 = 0;
   n4 = 0;
 
-  for(i=1; i<=N; i++) nodeSet[i].child = new int;
+  for(i=1; i<=N; i++) nodeSet[i].child = new(nodeItem *)();
 
   printf( "size of tree node %d\n", sizeof(nodeItem));
   
@@ -30,17 +30,18 @@ trie::trie(int N1, int numrules1, int binth1, float spfac1, struct pc_rule* rule
   for (i=0; i<MAXDIMENSIONS; i++){
     nodeSet[root].field[i].low = 0;
     if(i<2) nodeSet[root].field[i].high = 0xffffffff;
-    else if(i==4) nodeSet[root].field[i].high = 255;
+    else if(i==4) nodeSet[root].field[i].high = 255; //This code is never run...maybe bad?  We only look at src, dest, input port, output port anyway so...
     else nodeSet[root].field[i].high = 65535; 
   }
-  nodeSet[root].ruleid = (int *)calloc(numrules, sizeof(int));
+  nodeSet[root].ruleid = new int[numrules]();
   for(i=0; i< numrules; i++) nodeSet[root].ruleid[i] = i;
   nodeSet[root].dim = 0;
   nodeSet[root].ncuts = 0;
 	
   freelist = 2;	// create list of unallocated nodes
-  for (i = 2; i < N; i++) nodeSet[i].child[0] = i+1;
-  nodeSet[N].child[0] = Null;
+  nodeSet[root].child = NULL;
+  //for (i = 2; i < N; i++) nodeSet[i].child[0] = i+1;
+  //nodeSet[N].child[0] = Null;
   
   createtrie();
 	
@@ -69,7 +70,7 @@ void trie::choose_np_dim(nodeItem *v, int *d, int *np){
   int *nr[MAXDIMENSIONS];              //number of rules in each child
   int enter_loop=0;
 
-  for(k=0; k<MAXDIMENSIONS; k++) nr[k]=NULL;
+  for(k=0; k<MAXDIMENSIONS; k++) nr[k] = NULL;
 
   for(k=0; k<MAXDIMENSIONS; k++){
     
@@ -286,7 +287,7 @@ void trie::createtrie(){
     v = Q(1); Q <<= 1;
 
     //printf("dequeue %d\n", v);
-    remove_redundancy(&nodeSet[v]);
+    //remove_redundancy(&nodeSet[v]);
     choose_np_dim(&nodeSet[v], d, np);
     if(nodeSet[v].nrules <= binth){
       nodeSet[v].isleaf = 1;
@@ -301,25 +302,25 @@ void trie::createtrie(){
       int k = *d;
       //printf("***cutting %d in dimension %d with %3d cuts in layer %2d, %4d rules (%8x:%8x)\n", v, *d, *np, pass, nodeSet[v].nrules, nodeSet[v].field[k].low, nodeSet[v].field[k].high);
       nodeSet[v].ncuts = *np;
-      nodeSet[v].child = (int *)realloc(nodeSet[v].child, nodeSet[v].ncuts * sizeof(int));
+      nodeSet[v].child = (nodeItem **)realloc(nodeSet[v].child, nodeSet[v].ncuts * sizeof(nodeItem *));
       r = (nodeSet[v].field[k].high - nodeSet[v].field[k].low)/nodeSet[v].ncuts;
       lo = nodeSet[v].field[k].low;
       hi = lo + r;
-      for(int i = 0; i < nodeSet[v].ncuts; i++){ 
+      for(int i = 0; i < nodeSet[v].ncuts; i++){ //This for loop iterates over the hi and low value and sets i to count the number of cuts...can be confusing, and maybe error prone 
 	  empty = 1;
 	  nr = 0;
         for(int j=0; j<nodeSet[v].nrules; j++){
           if(rule[nodeSet[v].ruleid[j]].field[k].low >=lo && rule[nodeSet[v].ruleid[j]].field[k].low <=hi ||
              rule[nodeSet[v].ruleid[j]].field[k].high>=lo && rule[nodeSet[v].ruleid[j]].field[k].high<=hi ||
-             rule[nodeSet[v].ruleid[j]].field[k].low <=lo && rule[nodeSet[v].ruleid[j]].field[k].high>=hi){
+             rule[nodeSet[v].ruleid[j]].field[k].low <=lo && rule[nodeSet[v].ruleid[j]].field[k].high>=hi){ //Not sure that this line is correct...
                empty = 0;
                nr++;
           }
         }
         if(!empty){
           n++;
-          nodeSet[v].child[i] = freelist; 
-          u = freelist;
+          nodeSet[v].child[i] = &nodeSet[freelist]; 
+		  u = freelist++;
           // freelist = nodeSet[freelist].child[0];
           nodeSet[u].nrules = nr;
           //printf("creat node %d (%d child of %d) with %d rules\n", u, i, v, nr);
@@ -342,7 +343,7 @@ void trie::createtrie(){
 	      }
           }
           int s = 0;
-          nodeSet[u].ruleid = (int *)calloc(nodeSet[v].nrules, sizeof(int));
+          nodeSet[u].ruleid = new int[nodeSet[v].nrules]();
           for(int j=0; j<nodeSet[v].nrules; j++){
             if(rule[nodeSet[v].ruleid[j]].field[k].low >=lo && rule[nodeSet[v].ruleid[j]].field[k].low <=hi ||
                rule[nodeSet[v].ruleid[j]].field[k].high>=lo && rule[nodeSet[v].ruleid[j]].field[k].high<=hi ||
@@ -352,7 +353,7 @@ void trie::createtrie(){
             }
           }
         }else{
-          nodeSet[v].child[i] = Null;
+          nodeSet[v].child[i] = NULL;
         }  
         lo = hi + 1;
         hi = lo + r;
@@ -372,47 +373,50 @@ int trie::trieLookup(long long* header){
   
   int index[MAXDIMENSIONS];
   int cdim, cchild, cover, cuts;
-  int cnode = root;
+  nodeItem * cnode = &(nodeSet[root]);
+  //int cnode = root;
   int match = 0;
   int nbits;
   int i,k;
   
-  for(i = 0; i< MAXDIMENSIONS; i++){
+  for(i = 0; i < MAXDIMENSIONS; i++){
     if(i == 4) index[i] = 8;
     else if(i >= 2) index[i] = 16;
     else index[i] = 32;
   }
   
-  while(nodeSet[cnode].isleaf != 1){
-    n4+=NODESIZE;
+  while(cnode->isleaf != 1){
+    n4+=NODESIZE; //NOOOOOOOO!
     nbits = 0;
-    cuts = nodeSet[cnode].ncuts;
+    cuts = cnode->ncuts;
     while(cuts != 1){
       nbits ++;
       cuts /= 2;
     }
-    cdim = nodeSet[cnode].dim;
-    cchild = 0;
+    cdim = cnode->dim;
+	cchild = 0;
+
+	//Does this work?
     for(i = index[cdim]; i > index[cdim] - nbits; i--){
       if((header[cdim] & 1<<(i-1)) != 0){
       	cchild += (int)pow(2, i-index[cdim]+nbits-1);
       }
     }
     
-    cnode = nodeSet[cnode].child[cchild]; 
+    cnode = cnode->child[cchild]; 
     
-    if(cnode == Null) break; 	
+    if(cnode == NULL) break; 	
     index[cdim] -= nbits;
     
   }
   
-  if(cnode != Null){
-    for(i = 0; i < nodeSet[cnode].nrules; i++){
+  if(cnode != NULL){
+    for(i = 0; i < cnode->nrules; i++){
       n4+=RULEPTSIZE+RULESIZE;
       cover = 1;
       for(k = 0; k < MAXDIMENSIONS; k++){
-        if(rule[nodeSet[cnode].ruleid[i]].field[k].low > header[k] ||
-           rule[nodeSet[cnode].ruleid[i]].field[k].high< header[k]){
+        if(rule[cnode->ruleid[i]].field[k].low > header[k] ||
+           rule[cnode->ruleid[i]].field[k].high< header[k]){
           cover = 0;
           break;
         }
@@ -423,11 +427,30 @@ int trie::trieLookup(long long* header){
       }
     }
   }
+  else
+  {
+  	fprintf(stderr, "Error: could not find a node with the rule by lookup!\n");
+  }
   
   if(match == 1){
-    return nodeSet[cnode].ruleid[i];
+    return cnode->ruleid[i];
   }else{
     return -1;
   }
 		
+}
+
+
+int trie::trieSize() {
+	printf("TrieSize called!\n");
+	for(int i = 1; i < freelist; i++)
+	{
+		if(nodeSet[i].child == NULL)
+		{
+			fprintf(stderr, "Error: node %d should have been initialized, but wasn't, error in logic...\n", i);
+		}
+	}
+	if(n != freelist - 1)
+		fprintf(stderr, "Error: n does not match freelist, something not right!\n");
+	return freelist - 1;
 }
