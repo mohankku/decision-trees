@@ -156,14 +156,16 @@ int main(int argc, char* argv[]){
   int i,j;
   long long header[6];
   int matchid, fid;
-  char *s = (char *)calloc(200, sizeof(char));
+  char *s = new char[200]();
+  //memset(s, 0, 200);
   
   parseargs(argc, argv);
    
   while(fgets(s, 200, fpr) != NULL)numrules++;
   rewind(fpr);
           
-  rule = (pc_rule *)calloc(numrules, sizeof(pc_rule));
+  //rule = (pc_rule *)calloc(numrules, sizeof(pc_rule));
+  rule = new pc_rule[numrules]();
   numrules = loadrule(fpr, rule);
   
   printf("the number of rules = %d\n", numrules);
