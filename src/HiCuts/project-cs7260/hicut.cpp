@@ -195,7 +195,7 @@ int main(int argc, char* argv[]){
   printf("number of nodes = %d\n", T.trieSize());
   printf("max trie depth = %d\n", T.trieDepth()); 
   printf("remove redun = %d\n", T.trieRedun());
-  printf("Strored rules = %d\n", T.trieRule());
+  printf("Stored rules = %d\n", T.trieRule());
   printf("Bytes/filter = %f\n", (T.trieSize()*NODESIZE + numrules*RULESIZE + T.trieRule()*RULEPTSIZE)*4/numrules);
   printf("*************************\n");
   
