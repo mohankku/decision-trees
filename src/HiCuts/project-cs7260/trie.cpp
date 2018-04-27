@@ -21,7 +21,7 @@ trie::trie(int N1, int numrules1, int binth1, float spfac1, struct pc_rule* rule
   n3 = 0;
   n4 = 0;
 
-  for(i=1; i<=N; i++) nodeSet[i].child = (int *)malloc(sizeof(int));
+  for(i=1; i<=N; i++) nodeSet[i].child = new int;
 
   printf( "size of tree node %d\n", sizeof(nodeItem));
   
@@ -271,8 +271,8 @@ void trie::createtrie(){
 	
   list Q(MAXNODES);
   int last;
-  int *d = (int *)malloc(sizeof(int));
-  int *np = (int *)malloc(sizeof(int));
+  int *d = new int;
+  int *np = new int;
   int nr;
   int empty;
   int u,v;
