@@ -189,7 +189,7 @@ int main(int argc, char* argv[]){
   //    rule[i].field[4].low, rule[i].field[4].high);
   //}
   
-  trie T(1000000, numrules, binth, spfac, rule, opt);
+  trie T(MAXNODES, numrules, binth, spfac, rule, opt);
   
   printf("*************************\n");
   printf("number of nodes = %d\n", T.trieSize());
@@ -206,15 +206,16 @@ int main(int argc, char* argv[]){
       i++;
       
       if((matchid = T.trieLookup(header)) == -1){
-        printf("? packet %d match NO rule, should be %d\n", i, fid+1);
+        //printf("? packet %d match NO rule, should be %d\n", i, fid+1);
         j++;
-      }else if(matchid == fid-1){
+      }else if(matchid == fid){
         //printf("packet %d match rule %d\n", i, matchid);
-      }else if(matchid > fid-1){
-        printf("? packet %d match lower priority rule %d, should be %d\n", i, matchid+1, fid);
+      }else if(matchid > fid){
+        printf("? packet %d match lower priority rule %d, should be %d\n", i, matchid, fid);
         j++;
       }else{
-        printf("! packet %d match higher priority rule %d, should be %d\n", i, matchid+1, fid);
+        printf("! packet %d match higher priority rule %d, should be %d\n", i, matchid, fid);
+		j++;
       }
     }
     printf("%d packets are classified, %d of them are misclassified\n", i, j);

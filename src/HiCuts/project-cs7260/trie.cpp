@@ -429,7 +429,7 @@ int trie::trieLookup(long long* header){
   }
   else
   {
-  	fprintf(stderr, "Error: could not find a node with the rule by lookup!\n");
+  	//fprintf(stderr, "Error: could not find a node with the rule by lookup!\n");
   }
   
   if(match == 1){

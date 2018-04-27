@@ -1,5 +1,6 @@
 #include "stdinc.h"
 #include "list.h"
+#include "assert.h"
 
 list::list(int N1) {
 	N = N1; next = new int[N+1];
@@ -35,7 +36,7 @@ int list::operator()(int i) {
 
 // Add i to the end of the list.
 void list::operator&=(int i) {
-	if (next[i] != -1) fatal("list::operator&=: item already in list");
+	assert(next[i] == -1);
 	if (first == Null) first = i;
 	else next[last] = i;
 	next[i] = Null; last = i;
