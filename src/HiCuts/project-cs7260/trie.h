@@ -1,6 +1,8 @@
 #ifndef __TRIE_EH
 #define __TRIE_EH
 
+#include <vector>
+
 class trie {
 
 	typedef struct _nodeItem {
@@ -10,7 +12,7 @@ class trie {
   		struct range field[MAXDIMENSIONS];      
   		unsigned int dim : 3;  	//0:sip; 1:dip; 2:proto; 3:sp; 4:dp
   		unsigned int ncuts; //number of cuts
-        struct _nodeItem ** child;             //child pointers
+        std::vector<int> children;             //child pointers
 	} nodeItem;
 
 	int	N;			// max number of nodes in trie
@@ -26,7 +28,7 @@ class trie {
 	struct pc_rule *rule;
 	int 	root;			// root of trie
 	int 	freelist;		// first nodeItem on free list
-	nodeItem *nodeSet;	// base of array of NodeItems
+	std::vector<nodeItem> nodeSet;	// base of array of NodeItems
 	
 	void    choose_np_dim(nodeItem *v, int *d, int *np);
 	void    remove_redundancy(nodeItem *v); 
