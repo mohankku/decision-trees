@@ -32,8 +32,7 @@ int loadrule(FILE *fp, pc_rule *rule){
     if(siplen == 0){
       rule[i].field[0].low = 0;
       rule[i].field[0].high = 0xFFFFFFFF;
-	/* I think this should be:
-	} else {
+	} else if(siplen > 0 && siplen <=32){
 		tmp = sip1<<24;
 		tmp += sip2<<16;
 		tmp += sip3<<8;
@@ -41,8 +40,12 @@ int loadrule(FILE *fp, pc_rule *rule){
 		tmp &= (0xFFFFFFFF << (32 - siplen));
 		rule[i].field[0].low = tmp;
 		rule[i].field[0].high = rule[i].field[0].low + (1 << (32 - siplen)) - 1;
-		}*/
-    }else if(siplen > 0 && siplen <= 8){
+    }else{
+      printf("Src IP length exceeds 32\n");
+      return 0;
+    }
+	//Old code kept in just in case
+    /*}else if(siplen > 0 && siplen <= 8){
       tmp = sip1<<24;
       rule[i].field[0].low = tmp;
       rule[i].field[0].high = rule[i].field[0].low + (1<<(32-siplen)) - 1;
@@ -58,18 +61,25 @@ int loadrule(FILE *fp, pc_rule *rule){
       tmp = sip1<<24; tmp += sip2<<16; tmp += sip3<<8; tmp += sip4;
       rule[i].field[0].low = tmp; 
       rule[i].field[0].high = rule[i].field[0].low + (1<<(32-siplen)) - 1;	
-    }else{
-      printf("Src IP length exceeds 32\n");
-      return 0;
-    }
+*/
     if(diplen == 0){
       rule[i].field[1].low = 0;
       rule[i].field[1].high = 0xFFFFFFFF;
-    }else if(diplen > 0 && diplen <= 8){
-      tmp = dip1<<24;
+    }else if(diplen > 0 && diplen <= 32){
+	  tmp = dip1<<24;
+	  tmp += dip2<<16;
+	  tmp += dip3<<8;
+	  tmp += dip4;
+	  tmp &= (0xFFFFFFFF << (32 - diplen));
       rule[i].field[1].low = tmp;
       rule[i].field[1].high = rule[i].field[1].low + (1<<(32-diplen)) - 1;
-    }else if(diplen > 8 && diplen <= 16){
+	}
+    else{
+      printf("Dest IP length exceeds 32\n");
+      return 0;
+    }
+
+/*}else if(diplen > 8 && diplen <= 16){
       tmp = dip1<<24; tmp +=dip2<<16;
       rule[i].field[1].low = tmp; 	
       rule[i].field[1].high = rule[i].field[1].low + (1<<(32-diplen)) - 1;	
@@ -81,10 +91,8 @@ int loadrule(FILE *fp, pc_rule *rule){
       tmp = dip1<<24; tmp +=dip2<<16; tmp+=dip3<<8; tmp +=dip4;
       rule[i].field[1].low = tmp; 	
       rule[i].field[1].high = rule[i].field[1].low + (1<<(32-diplen)) - 1;	
-    }else{
-      printf("Dest IP length exceeds 32\n");
-      return 0;
-    }
+    }*/
+
     if(protomask == 0xFF){
       rule[i].field[4].low = proto;
       rule[i].field[4].high = proto;
