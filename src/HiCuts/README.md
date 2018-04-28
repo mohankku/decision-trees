@@ -2,7 +2,7 @@ Readme:
 ======
 
 To build:
-   - cd project-cs7260
+   - cd src/HiCuts/project-cs7260
    - make
 
 To clean:
