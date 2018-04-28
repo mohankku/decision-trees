@@ -1,0 +1,7 @@
+HiCut project - This is the top level directory
+
+refs - contains the paper references
+
+src  - contains the source code.
+       To build and run the code, refer to the following readme:
+       src/HiCuts/README.md
