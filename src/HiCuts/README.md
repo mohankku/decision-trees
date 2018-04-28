@@ -1,6 +1,20 @@
-# Hicuts で実際にフィルタリング
+Readme:
+======
 
-## 下記を行うことが目標
+To build:
+   - cd project-cs7260
+   - make
 
-* Haoyu さんが作ったプログラムを走らせてみる
-* 田中研モデルへと適用できるようにプログラムを改変する
+To clean:
+   - make clean
+
+To run the code:
+   - Command line options
+     ./hicut -h
+     hicut [-b binth][-s spfac][-o opt][-r ruleset][-t trace]
+
+   Example runs:
+           ./hicut -o 0 -r rules_50 -s 1
+           ./hicut -o 0 -r rules_50 -s 1 -b 8
+           ./hicut -o 2 -r rules_50 -s 1
+           ./hicut -o 3 -r rules_50 -s 1

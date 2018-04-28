@@ -131,7 +131,6 @@ void parseargs(int argc, char *argv[]) {
 	  break;
 	case 'h':
 	  printf("hicut [-b binth][-s spfac][-o opt][-r ruleset][-t trace]\n");
-	  printf("mail me: hs1@arl.wustl.edu\n");
 	  exit(1);
 	  break;
 	default:
